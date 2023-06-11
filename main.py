@@ -68,7 +68,7 @@ def get_handler(operator):
 
 
 def input_text():
-    return input().lower().split(' ')
+    return input('Input some command: ').lower().split(' ')
 
 def main():
     while True:
