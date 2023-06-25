@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from collections import UserDict
+import pickle, os
 
 class AddressBook(UserDict):
     def __init__(self, *args, **kwargs):
@@ -8,6 +9,23 @@ class AddressBook(UserDict):
     def add_record(self, record):
         self.data[record.name.value] = record
     
+    def write_data(self):   
+        with open(path_to_db, 'wb') as file: 
+            pickle.dump(self.data, file)
+    
+    def read_data(self):        
+        with open(path_to_db, 'rb') as file:
+            self.data = pickle.load(file)
+    def find(self, word_input):        
+        rset = set()
+        for k, v in self.data.items():
+            if k == word_input:
+                rset.add(k)
+                continue
+            elif v.phones[0].value == word_input:
+                 rset.add(k)
+        return list(rset)
+        
     def __iter__(self):
         return self.iterator()
 
@@ -84,7 +102,7 @@ class Birthday(Field):
 
 
 STOP_WORDS = ["good bye", "close", "exit"]
-
+path_to_db = 'db.bin'
 address_book = AddressBook()
 
 def input_error(func):
@@ -166,26 +184,49 @@ def show_all(*args):
 def close(word):
     return word in STOP_WORDS
 
+def find(word):
+    lfind = address_book.find(word[1])
+    return lfind if lfind else 'nothing found'
+     
 OPERATIONS = {
     'hello': hello,
     'add': add,
     'change': change,
     'phone': phone,
-    'show_all': show_all    
+    'show_all': show_all,
+    'find': find     
 }
 
 def get_handler(operator):
     return OPERATIONS.get(operator, lambda x: "I don't know such a command")
 
+
 def input_text():
-    return input('Input some command: ').lower().split(' ')
+    text = 'Input some command: ' 
+    return input(text).lower().split(' ')
 
 def main():
+
+    if os.path.exists(path_to_db):        
+            address_book.read_data() 
+
+    greeting_text = '----------------------- \n \
+    List of commands: \n \
+    "hello"\n \
+    "add"\n \
+    "change"\n \
+    "phone"\n \
+    "show_all"\n \
+    New command "Find" if you want to find some records'
+
+    print(greeting_text)
+
     while True:
         user_input = input_text()
         if len(user_input) > 0:
             command = user_input[0]
-            if close(command):
+            if close(command):                
+                address_book.write_data()               
                 print("Good bye!")
                 break
             else:
