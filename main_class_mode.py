@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from collections import UserDict
 import pickle, os
+from termcolor import colored, cprint
 
 class AddressBook(UserDict):
     def __init__(self, *args, **kwargs):
@@ -16,6 +17,7 @@ class AddressBook(UserDict):
     def read_data(self):        
         with open(path_to_db, 'rb') as file:
             self.data = pickle.load(file)
+    
     def find(self, word_input):        
         rset = set()
         for k, v in self.data.items():
@@ -219,7 +221,7 @@ def main():
     "show_all"\n \
     New command "Find" if you want to find some records'
 
-    print(greeting_text)
+    cprint(greeting_text, 'blue')
 
     while True:
         user_input = input_text()
@@ -227,11 +229,17 @@ def main():
             command = user_input[0]
             if close(command):                
                 address_book.write_data()               
-                print("Good bye!")
+                cprint("Good bye!", 'blue')
                 break
             else:
                 handler = OPERATIONS.get(command, lambda x: "I don't know such a command")
-                print(handler(user_input))
+                cprint(handler(user_input), 'green')
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
