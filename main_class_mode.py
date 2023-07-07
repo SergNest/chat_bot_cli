@@ -9,6 +9,19 @@ class AddressBook(UserDict):
     
     def add_record(self, record):
         self.data[record.name.value] = record
+
+    def delete_contact(self, contact_name):
+        """
+        Deletes a contact record based on the provided contact_name.
+        If the contact is found and deleted, it returns "Contact deleted".
+        If the contact is not found, it returns "Contact not found".
+        """
+        contact_to_delete = self.data.get(contact_name)
+        if contact_to_delete:
+            del self.data[contact_name]
+            return "Contact deleted"
+        else:
+            return "Contact not found"
     
     def write_data(self):   
         with open(path_to_db, 'wb') as file: 
@@ -58,6 +71,9 @@ class Record:
     def edit_phone(self, old_phone, new_phone):
         index = self.phones.index(old_phone)
         self.phones[index] = new_phone
+    
+    def edit_record(self):
+        pass
 
     def days_to_birthday(self):
         if self.birthday:
@@ -69,6 +85,7 @@ class Record:
             return days_left
         else:
             return None
+        
 
 class Field:
     def __init__(self, value):
@@ -189,6 +206,12 @@ def close(word):
 def find(word):
     lfind = address_book.find(word[1])
     return lfind if lfind else 'nothing found'
+
+def del_record(word):
+    return address_book.del_record(word[1])
+
+def change_record(word):
+    return address_book.update_contact(word[1])
      
 OPERATIONS = {
     'hello': hello,
@@ -196,7 +219,8 @@ OPERATIONS = {
     'change': change,
     'phone': phone,
     'show_all': show_all,
-    'find': find     
+    'find': find, 
+    'del': del_record,      
 }
 
 def get_handler(operator):
